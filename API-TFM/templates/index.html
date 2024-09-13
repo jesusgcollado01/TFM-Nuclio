@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TFM DS Market y Stock</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000; /* Fondo negro */
+            color: #fff; /* Texto blanco */
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3.5rem; /* Título más grande */
+            font-weight: 600;
+            color: #FFD700; /* Texto en amarillo dorado */
+            margin-bottom: 0.5rem; /* Espacio reducido debajo del título */
+        }
+
+        h2 {
+            font-size: 2rem; /* Subtítulo más pequeño */
+            font-weight: 400;
+            color: #FFD700; /* Texto en amarillo dorado */
+            margin-bottom: 2rem; /* Espacio entre el subtítulo y el formulario */
+        }
+
+        form {
+            background-color: #1a1a1a; /* Fondo gris oscuro */
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        label {
+            display: block;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: #FFD700;
+            color: #000;
+            font-size: 1.2rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #ffcc00;
+        }
+
+        #result {
+            margin-top: 2rem;
+            font-size: 1.2rem;
+            color: #FFD700; /* Resultado en amarillo */
+        }
+
+        .logo {
+            position: absolute;
+            width: 180px;
+        }
+
+        .logo-left {
+            top: 20px;
+            left: 20px;
+        }
+
+        .logo-right {
+            top: 20px;
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <img src="/static/images/nuclio_2.jpeg" alt="Logo Corporativo 1" class="logo logo-left">
+    <img src="/static/images/Logo DS Market.png" alt="Logo Corporativo 2" class="logo logo-right">
+
+    <h1>TFM DS Market</h1>
+    <h2>Stock</h2>
+    
+    <form id="stockForm">
+        <label for="id">ID:</label>
+        <input type="text" id="id" name="id" required>
+        <label for="week">Semana:</label>
+        <input type="number" id="week" name="week" required>
+        <button type="submit">Consultar</button>
+    </form>
+    
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('stockForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = document.getElementById('id').value;
+            const week = document.getElementById('week').value;
+
+            fetch('/get_stock', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `id=${id}&week=${week}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.stock_preciso) {
+                    document.getElementById('result').innerHTML = `
+                        <p><strong>Cantidad a pedir:</strong> ${data.n_pedido}</p>
+                        <p><strong>Stock Extra:</strong> ${data.stock_extra}</p>
+                        <p><strong>Stock preciso:</strong> ${data.stock_preciso}</p>
+                    `;
+                } else {
+                    document.getElementById('result').innerText = `Error: ${data.error}`;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
